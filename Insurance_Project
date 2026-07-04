@@ -18,9 +18,45 @@
                 05 POLICY-NUMBER        PIC 9(10).
                 05 POLICY-HOLDER-NAME   PIC X(30).
                 05 POLICY-COVERAGE-TYPE          PIC X(20).
-                05 POLICY-PREMIUM       PIC 9(7)V99.*COST*
+                05 POLICY-PREMIUM       PIC 9(7)V99.        *COST*
+                05 POLICY-COVERAGE-TYPE          PIC X(20).
                 05 POLICY-COVERAGE-LIMIT   PIC 9(7)V9(2).
                 05 POLICY-STATUS        PIC X(10).
                 05 POLICY-START-DATE    PIC 9(8).
                 05 POLICY-END-DATE      PIC 9(8).
- 
+                05 FILLER               PIC X(10).
+      WORKING-STORAGE SECTION.
+           01 WS-POLICY-NUMBER    PIC 9(5).
+           01 WS-NEW-COV-LIMIT PIC 9(7)V9(2).
+           01 WS-CHOICE PIC X(1).
+              88 VIEW-POLICY VALUE '1'.
+              88 UPDATE-COVERAGE VALUE '2'.
+           01 WS-PV-SWITCH PIC X(2) VALUE 'N'.
+              88 POLICY-VIEWED PIC X(1) VALUE 'Y'.
+              88 POLICY-NOT-VIEWED PIC X(1) VALUE 'N'.
+           01 WS-PU-SWITCH PIC X(2) VALUE 'N'.
+              88 POLICY-UPDATED PIC X(1) VALUE 'Y'.
+      PROCEDURE DIVISION.
+           MOVE ZEROS TO WS-POLICY-NUMBER.
+              WS-NEW-COV-LIMIT.
+           MOVE 'N' TO WS-PV-SWITCH.
+              WS-PU-SWITCH.
+           DISPLAY "INSURANCE POLICY MANAGEMENT SYSTEM".
+           DISPLAY '1. View Policy Details'.
+           DISPLAY '2. Update Coverage Limit'.
+           ACCEPT WS-CHOICE.
+           ACCEPT WS-POLICY-NUMBER.
+           ACCEPT WS-NEW-COV-LIMIT.
+           DISPLAY 'USER ENTERED CHOICE:  ' WS-CHOICE.
+           DISPLAY 'USER ENTERED POLICY NUMBER: 'WS-POLICY-NUMBER.
+           DISPLAY 'USER ENTERED NEW COVERAGE LIMIT: 'WS-NEW-COV-LIMIT
+           OPEN I-O POLICY-FILE.
+           IF WS-CHOICE = '1' THEN
+              PERFORM PARA-VIEW-POLICY UNTIL WS-PV-SWITHCH = 'Y'
+           ELSE IF WS-CHOICE = '2' THEN
+              PERFORM PARA-UPDATE-POLICY UNTIL WS-PU-SWITHCH = 'Y'
+           ELSE
+              DISPLAY 'INVALID CHOICE. PLEASE ENTER 1 OR 2'.
+           PARA-VIEW-POLICY.
+              READ POLICY-FILE
+                  AT END
